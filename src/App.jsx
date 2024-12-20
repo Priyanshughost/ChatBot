@@ -10,10 +10,17 @@ function App() {
       setPosition({ x: e.clientX, y: e.clientY });
     };
 
+    const handleTouchMove = (e) => {
+      const touch = e.touches[0]; // Get the first touch point
+      setPosition({ x: touch.clientX, y: touch.clientY });
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
 
