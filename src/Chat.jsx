@@ -21,17 +21,17 @@ function Chat() {
   return (
     <div className="interface">
       <div className="top">
-        <img src="/src/logo2.png" alt="" />
+        <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/logo2.png" alt="" />
       </div>
       <div className="bot">
         <div className="nav-btns">
         <img
-            src="src/f-arrow.svg"
+            src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/f-arrow.svg"
             alt="Show Left"
             onClick={() => setShowLeft(!showLeft)}
           />
           <img
-            src="src/b-arrow.svg"
+            src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/b-arrow.svg"
             alt="Show Right"
             onClick={() => setShowRight(!showRight)}
           />
@@ -40,10 +40,9 @@ function Chat() {
         <div className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}>
             <div className="title">
               <div className="t-left">
-                <img src="src/book.svg" alt="" />
+                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="" />
                 <h3>Subjects</h3>
               </div>
-              <img src="" alt="" />
             </div>
             <div className="list">
               <Sub />
@@ -59,16 +58,15 @@ function Chat() {
             </div>
             <div className="mssg">
               <input type="text" placeholder='Ask Something' />
-              <img src="/src/send.svg" alt="" />
+              <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/send.svg" alt="" />
             </div>
           </div>
           <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
             <div className="title">
               <div className="t-left">
-                <img src="src/rec.svg" alt="" />
+                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg" alt="" />
                 <h3>Recommended Resources</h3>
               </div>
-              <img src="" alt="" />
             </div>
             <div className="list">
               <Sub />
