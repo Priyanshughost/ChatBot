@@ -28,7 +28,7 @@ function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer YOUR_API_KEY`, // Replace with your API Key
+          "Authorization": `Bearer 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`, // Replace with your API Key
         },
         body: JSON.stringify({
           messages: [
