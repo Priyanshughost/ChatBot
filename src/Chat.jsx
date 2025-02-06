@@ -23,31 +23,25 @@ function Chat() {
     setLoading(true);
 
     try {
-      // Replace with Groq's API endpoint and authentication if needed
       const res = await fetch("https://api.groq.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer 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`, // Replace with your API Key
+          "Authorization": `Bearer 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` // Replace with your actual API key
         },
         body: JSON.stringify({
+          model: "mixtral-8x7b-32768", // Change model if needed
           messages: [
             { role: "user", content: message }
           ],
-          model: "llama-3.3-70b-versatile", // Choose the model based on documentation
           temperature: 1,
-          max_completion_tokens: 1024,
+          max_tokens: 1024,
           top_p: 1,
-          stream: true
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Error with API request");
-      }
-
       const data = await res.json();
-      const botReply = data.choices[0]?.delta?.content;
+      const botReply = data.choices?.[0]?.message?.content || "No response";
 
       setChatHistory([...chatHistory, { user: message, bot: botReply }]);
       setMessage(""); // Clear input field
