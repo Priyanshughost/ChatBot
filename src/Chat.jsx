@@ -1,31 +1,57 @@
-import React, { useState, useEffect } from 'react'
-import Sub from '/src/Sub'
-import Response from '/src/Response'
-import User from '/src/User'
-function Chat() {
+import React, { useState, useEffect } from "react";
+import Sub from "/src/Sub";
+import Response from "/src/Response";
+import User from "/src/User";
 
+function Chat() {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
+  const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]); // Store chat messages
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
-
-    // Add resize event listener
-    window.addEventListener('resize', handleResize);
-
-    // Clean up event listener
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Function to send message to API
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
+      const botReply = data.choices[0].message.content;
+
+      setChatHistory([...chatHistory, { user: message, bot: botReply }]);
+      setMessage(""); // Clear input field
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="interface">
       <div className="top">
-        <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/logo2.png" alt="" />
+        <img
+          src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/logo2.png"
+          alt="Chatbot Logo"
+        />
       </div>
       <div className="bot">
         <div className="nav-btns">
-        <img
+          <img
             src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/f-arrow.svg"
             alt="Show Left"
             onClick={() => setShowLeft(!showLeft)}
@@ -37,10 +63,17 @@ function Chat() {
           />
         </div>
         <div className="main">
-        <div className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}>
+          <div
+            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
+              screenWidth > 670 ? "show" : "hide"
+            }`}
+          >
             <div className="title">
               <div className="t-left">
-                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="" />
+                <img
+                  src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg"
+                  alt="Subjects"
+                />
                 <h3>Subjects</h3>
               </div>
             </div>
@@ -53,18 +86,36 @@ function Chat() {
           </div>
           <div className="mid">
             <div className="chat">
-              <Response />
-              <User />
+              {chatHistory.map((chat, index) => (
+                <div key={index}>
+                  <User message={chat.user} />
+                  <Response message={chat.bot} />
+                </div>
+              ))}
             </div>
             <div className="mssg">
-              <input type="text" placeholder='Ask Something' />
-              <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/send.svg" alt="" />
+              <input
+                type="text"
+                placeholder="Ask Something"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+              />
+              <img
+                src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/send.svg"
+                alt="Send"
+                onClick={sendMessage}
+                style={{ cursor: "pointer", opacity: loading ? 0.5 : 1 }}
+              />
             </div>
           </div>
           <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
             <div className="title">
               <div className="t-left">
-                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg" alt="" />
+                <img
+                  src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg"
+                  alt="Recommended"
+                />
                 <h3>Recommended Resources</h3>
               </div>
             </div>
@@ -78,7 +129,7 @@ function Chat() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Chat
+export default Chat;
