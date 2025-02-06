@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-function Text() {
-  return (
-    <div className="box">hello</div>
-  )
+function Text({ message }) {
+  return <div className="box">{message}</div>;
 }
 
-export default Text
+export default Text;
