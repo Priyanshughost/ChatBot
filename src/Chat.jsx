@@ -17,20 +17,24 @@ function Chat() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Function to send message to API
+  // Function to send message to Groq API
   const sendMessage = async () => {
     if (!message.trim()) return;
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/chat", {
+      // Send request to Groq API
+      const res = await fetch("https://api.groq.com/v1/your-endpoint", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`, // Replace with your Groq API key
+        },
+        body: JSON.stringify({ query: message }), // Change to the correct parameter for Groq
       });
 
       const data = await res.json();
-      const botReply = data.choices[0].message.content;
+      const botReply = data.result; // Adjust based on the actual response format from Groq
 
       setChatHistory([...chatHistory, { user: message, bot: botReply }]);
       setMessage(""); // Clear input field
@@ -64,9 +68,7 @@ function Chat() {
         </div>
         <div className="main">
           <div
-            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
-              screenWidth > 670 ? "show" : "hide"
-            }`}
+            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}
           >
             <div className="title">
               <div className="t-left">
