@@ -28,7 +28,7 @@ function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`, // Replace with your Groq API key
+          "Authorization": `Bearer ${process.env.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}`, // Replace with your Groq API key
         },
         body: JSON.stringify({ query: message }), // Change to the correct parameter for Groq
       });
