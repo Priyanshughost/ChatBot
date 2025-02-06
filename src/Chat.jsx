@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sub from "/src/Sub";
 import Response from "/src/Response";
 import User from "/src/User";
@@ -10,6 +10,7 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]); // Store chat messages
   const [loading, setLoading] = useState(false); // Loading state
+  const chatContainerRef = useRef(null); // Ref for scrolling
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -44,14 +45,37 @@ function Chat() {
       const data = await res.json();
       const botReply = data.choices[0].message.content;
 
-      setChatHistory([...chatHistory, { user: message, bot: botReply }]);
+      // Gradual typing effect for bot response
+      const newChatHistory = [...chatHistory, { user: message, bot: '' }];
+      setChatHistory(newChatHistory);
+
+      let i = 0;
+      const typingInterval = setInterval(() => {
+        setChatHistory(prevHistory => {
+          const updatedHistory = [...prevHistory];
+          updatedHistory[updatedHistory.length - 1].bot = botReply.slice(0, i + 1);
+          return updatedHistory;
+        });
+        i++;
+        if (i === botReply.length) {
+          clearInterval(typingInterval);
+          setLoading(false);
+        }
+      }, 100); // Adjust typing speed here
+
       setMessage(""); // Clear input field
     } catch (error) {
       console.error("API Error:", error);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  // Effect to automatically scroll to the bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   return (
     <div className="interface">
@@ -97,7 +121,7 @@ function Chat() {
             </div>
           </div>
           <div className="mid">
-            <div className="chat">
+            <div className="chat" ref={chatContainerRef}>
               {chatHistory.map((chat, index) => (
                 <div key={index}>
                   <User message={chat.user} />
