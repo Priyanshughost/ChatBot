@@ -26,8 +26,8 @@ function Chat() {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer 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`, // Replace with your actual API key
+          'Authorization': 'Bearer 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',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: "mixtral-8x7b-32768", // Ensure this model is supported
