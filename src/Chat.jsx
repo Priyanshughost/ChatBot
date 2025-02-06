@@ -23,18 +23,31 @@ function Chat() {
     setLoading(true);
 
     try {
-      // Send request to Groq API
-      const res = await fetch("https://api.groq.com/v1/your-endpoint", {
+      // Replace with Groq's API endpoint and authentication if needed
+      const res = await fetch("https://api.groq.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.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}`, // Replace with your Groq API key
+          "Authorization": `Bearer YOUR_API_KEY`, // Replace with your API Key
         },
-        body: JSON.stringify({ query: message }), // Change to the correct parameter for Groq
+        body: JSON.stringify({
+          messages: [
+            { role: "user", content: message }
+          ],
+          model: "llama-3.3-70b-versatile", // Choose the model based on documentation
+          temperature: 1,
+          max_completion_tokens: 1024,
+          top_p: 1,
+          stream: true
+        }),
       });
 
+      if (!res.ok) {
+        throw new Error("Error with API request");
+      }
+
       const data = await res.json();
-      const botReply = data.result; // Adjust based on the actual response format from Groq
+      const botReply = data.choices[0]?.delta?.content;
 
       setChatHistory([...chatHistory, { user: message, bot: botReply }]);
       setMessage(""); // Clear input field
@@ -68,7 +81,9 @@ function Chat() {
         </div>
         <div className="main">
           <div
-            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}
+            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
+              screenWidth > 670 ? "show" : "hide"
+            }`}
           >
             <div className="title">
               <div className="t-left">
