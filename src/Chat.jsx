@@ -27,7 +27,7 @@ function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer YOUR_GROQ_API_KEY`, // Replace with your actual API key
+          "Authorization": `Bearer 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`, // Replace with your actual API key
         },
         body: JSON.stringify({
           model: "mixtral-8x7b-32768", // Ensure this model is supported
