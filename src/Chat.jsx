@@ -61,7 +61,7 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 100); // Adjust typing speed here
+      }, 30); // Adjust typing speed here
 
       setMessage(""); // Clear input field
     } catch (error) {
