@@ -1,15 +1,14 @@
-import React from 'react'
-import Text from '/src/Text.jsx'
-function Response() {
+import React from "react";
+import Text from "/src/Text.jsx";
 
-    return (
-        <div className="wrap-res">
-            <div className="res">
-                <Text />
-            </div>
-        </div>
-
-    )
+function Response({ message }) {
+  return (
+    <div className="wrap-res">
+      <div className="res">
+        <Text message={message} />
+      </div>
+    </div>
+  );
 }
 
-export default Response
+export default Response;
