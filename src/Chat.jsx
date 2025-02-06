@@ -23,14 +23,14 @@ function Chat() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://api.groq.com/v1/chat/completions", {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer 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`, // Replace with your actual API key
+          "Authorization": `Bearer YOUR_GROQ_API_KEY`, // Replace with your actual API key
         },
         body: JSON.stringify({
-          model: "llama2-70b-4096", // Ensure this model is supported
+          model: "mixtral-8x7b-32768", // Ensure this model is supported
           messages: [{ role: "user", content: message }],
           temperature: 0.7,
           max_tokens: 1024,
