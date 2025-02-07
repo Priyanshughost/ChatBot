@@ -1,17 +1,16 @@
-import React from "react";
+import React from 'react';
 
 function Sub({ title, url }) {
   return (
-    <div className="sub">
-      <img
-        src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg"
-        alt="Website Icon"
-      />
-      <h4>
+    <div className='sub'>
+      <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="Resource" />
+      {url ? (
         <a href={url} target="_blank" rel="noopener noreferrer">
-          {title}
+          <h4>{title}</h4>
         </a>
-      </h4>
+      ) : (
+        <h4>{title}</h4>
+      )}
     </div>
   );
 }
