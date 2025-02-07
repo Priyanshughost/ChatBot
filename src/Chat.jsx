@@ -163,7 +163,7 @@ function Chat() {
             <div className="list">
               {sources.length > 0 ? (
                 sources.map((source, idx) => <Sub key={idx} url={source} />)
-              )}
+              ):<p>Documentation links will be given here</p>}
             </div>
           </div>
         </div>
