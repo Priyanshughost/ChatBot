@@ -18,23 +18,23 @@ function Chat() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Function to send message to Groq API
+  // Function to send message to Tavily API
   const sendMessage = async () => {
     if (!message.trim()) return;
     setLoading(true);
 
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer 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',
+          'Authorization': 'Bearer tvly-YOUR_API_KEY', // Replace with your Tavily API key
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: "mixtral-8x7b-32768", // Ensure this model is supported
-          messages: [{ role: "user", content: message }],
-          temperature: 0.7,
-          max_tokens: 1024,
+          query: message,
+          include_answer: "advanced", // Get a detailed LLM-generated answer
+          search_depth: "advanced",
+          max_results: 5
         }),
       });
 
@@ -43,10 +43,10 @@ function Chat() {
       }
 
       const data = await res.json();
-      const botReply = data.choices[0].message.content;
+      const botReply = data.answer || "I couldn't find an answer. Try a different question.";
 
       // Gradual typing effect for bot response
-      const newChatHistory = [...chatHistory, { user: message, bot: '' }];
+      const newChatHistory = [...chatHistory, { user: message, bot: '', sources: data.results }];
       setChatHistory(newChatHistory);
 
       let i = 0;
@@ -126,6 +126,20 @@ function Chat() {
                 <div key={index}>
                   <User message={chat.user} />
                   <Response message={chat.bot} />
+                  {chat.sources?.length > 0 && (
+                    <div className="sources mt-2">
+                      <h4 className="text-sm font-semibold">Sources:</h4>
+                      <ul className="list-disc pl-4">
+                        {chat.sources.map((source, idx) => (
+                          <li key={idx}>
+                            <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                              {source.title}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
