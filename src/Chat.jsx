@@ -8,10 +8,10 @@ function Chat() {
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([]); // Store chat messages
-  const [loading, setLoading] = useState(false); // Loading state
-  const [sources, setSources] = useState([]); // Store recommended sources
-  const chatContainerRef = useRef(null); // Ref for scrolling
+  const [chatHistory, setChatHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [sources, setSources] = useState([]);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -19,7 +19,6 @@ function Chat() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Function to send message to Tavily API
   const sendMessage = async () => {
     if (!message.trim()) return;
     setLoading(true);
@@ -28,12 +27,12 @@ function Chat() {
       const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer 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', // Tavily API key
+          'Authorization': 'Bearer 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',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "basic", // Get a short LLM-generated answer
+          include_answer: "basic",
           search_depth: "basic",
           max_results: 5
         }),
@@ -45,15 +44,8 @@ function Chat() {
 
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
+      setSources(data.results?.map(result => result.url) || []);
 
-      // Extract only the URLs from the response and update sources
-      const extractedSources = data.results?.map(result => result.url) || [];
-      setSources(extractedSources);
-
-      // ✅ Log URLs to Console
-      console.log("Recommended Resources:", extractedSources);
-
-      // Gradual typing effect for bot response
       const newChatHistory = [...chatHistory, { user: message, bot: '' }];
       setChatHistory(newChatHistory);
 
@@ -69,16 +61,14 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 30); // Adjust typing speed here
+      }, 30);
 
-      setMessage(""); // Clear input field
-    } catch (error) {
-      console.error("API Error:", error);
+      setMessage("");
+    } catch {
       setLoading(false);
     }
   };
 
-  // Effect to automatically scroll to the bottom when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -165,9 +155,7 @@ function Chat() {
             </div>
             <div className="list">
               {sources.length > 0 ? (
-                sources.map((source, idx) => (
-                  <Sub key={idx} url={source} />
-                ))
+                sources.map((source, idx) => <Sub key={idx} url={source} />)
               ) : (
                 <p>Documentation links will be given here</p>
               )}
