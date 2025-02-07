@@ -50,6 +50,9 @@ function Chat() {
       const extractedSources = data.results?.map(result => result.url) || [];
       setSources(extractedSources);
 
+      // ✅ Log URLs to Console
+      console.log("Recommended Resources:", extractedSources);
+
       // Gradual typing effect for bot response
       const newChatHistory = [...chatHistory, { user: message, bot: '' }];
       setChatHistory(newChatHistory);
@@ -66,7 +69,7 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 10); // Adjust typing speed here
+      }, 30); // Adjust typing speed here
 
       setMessage(""); // Clear input field
     } catch (error) {
@@ -118,13 +121,12 @@ function Chat() {
                 <h3>Subjects</h3>
               </div>
             </div>
-            subjects will be displayed soon
-{/*             <div className="list">
+            <div className="list">
               <Sub />
               <Sub />
               <Sub />
               <Sub />
-            </div> */}
+            </div>
           </div>
           <div className="mid">
             <div className="chat" ref={chatContainerRef}>
@@ -161,14 +163,15 @@ function Chat() {
                 <h3>Recommended Resources</h3>
               </div>
             </div>
-            resources will be displayed soon
-{/*             <div className="list">
+            <div className="list">
               {sources.length > 0 ? (
-                sources.map((source, idx) => source && <Sub key={idx} url={source} />)
+                sources.map((source, idx) => (
+                  <Sub key={idx} url={source} />
+                ))
               ) : (
                 <p>Documentation links will be given here</p>
               )}
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
