@@ -170,10 +170,13 @@ function Chat() {
               </div>
             </div>
             <div className="list">
-              <Sub />
-              <Sub />
-              <Sub />
-              <Sub />
+              {sources.length > 0 ? (
+                sources.map((source, idx) => (
+                  <Sub key={idx} title={source.title} url={source.url} />
+                ))
+              ) : (
+                <p>No recommended resources yet.</p>
+              )}
             </div>
           </div>
         </div>
