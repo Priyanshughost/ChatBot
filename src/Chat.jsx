@@ -2,16 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import Sub from "/src/Sub";
 import Response from "/src/Response";
 import User from "/src/User";
+import axios from "axios";
+
+const YOUTUBE_API_KEY = "AIzaSyAgAdQJyB38N_Re6zN5pgNXQu3HJYml6IA"; // Replace with your actual API key
+const YOUTUBE_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 
 function Chat() {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([]); // Store chat messages
-  const [loading, setLoading] = useState(false); // Loading state
-  const [sources, setSources] = useState([]); // Store recommended resources
-  const chatContainerRef = useRef(null); // Ref for scrolling
+  const [chatHistory, setChatHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [sources, setSources] = useState([]);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -19,7 +23,28 @@ function Chat() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Function to send message to Tavily API
+  const searchYouTube = async (query) => {
+    if (!query) return;
+    try {
+      const response = await axios.get(YOUTUBE_BASE_URL, {
+        params: {
+          q: query,
+          part: "snippet",
+          type: "video",
+          maxResults: 5,
+          key: YOUTUBE_API_KEY,
+        },
+      });
+
+      const videoLinks = response.data.items.map(
+        (video) => `https://www.youtube.com/watch?v=${video.id.videoId}`
+      );
+      console.log("YouTube Video Links:", videoLinks);
+    } catch (error) {
+      console.error("Error fetching YouTube data:", error);
+    }
+  };
+
   const sendMessage = async () => {
     if (!message.trim()) return;
     setLoading(true);
@@ -28,13 +53,13 @@ function Chat() {
       const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer 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', // Replace with your Tavily API key
+          'Authorization': 'Bearer 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',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "basic", // Only get a quick LLM-generated answer
-          search_depth: "basic",  // Do a basic search to save API credits
+          include_answer: "basic",
+          search_depth: "basic",
           max_results: 5
         }),
       });
@@ -46,14 +71,17 @@ function Chat() {
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
 
-      // Update chat history without sources in mid section
       const newChatHistory = [...chatHistory, { user: message, bot: '' }];
       setChatHistory(newChatHistory);
-      
-      // Store sources in "Recommended Resources" section
+
       setSources(data.results || []);
 
-      // Gradual typing effect for bot response
+      if (data.results.length > 0) {
+        const queryForYouTube = data.results[0].title;
+        console.log("Searching YouTube for:", queryForYouTube);
+        searchYouTube(queryForYouTube);
+      }
+
       let i = 0;
       const typingInterval = setInterval(() => {
         setChatHistory(prevHistory => {
@@ -66,16 +94,15 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 30); // Adjust typing speed here
+      }, 30);
 
-      setMessage(""); // Clear input field
+      setMessage("");
     } catch (error) {
       console.error("API Error:", error);
       setLoading(false);
     }
   };
 
-  // Effect to automatically scroll to the bottom when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -104,7 +131,6 @@ function Chat() {
           />
         </div>
         <div className="main">
-          {/* Left Section (Subjects) */}
           <div
             className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
               screenWidth > 670 ? "show" : "hide"
@@ -126,8 +152,6 @@ function Chat() {
               <Sub title="Computer Science" />
             </div>
           </div>
-
-          {/* Middle Section (Chat) */}
           <div className="mid">
             <div className="chat" ref={chatContainerRef}>
               {chatHistory.map((chat, index) => (
@@ -153,8 +177,6 @@ function Chat() {
               />
             </div>
           </div>
-
-          {/* Right Section (Recommended Resources) */}
           <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
             <div className="title">
               <div className="t-left">
