@@ -37,15 +37,15 @@ function Chat() {
           max_results: 5
         }),
       });
-      console.log(res);
+      
       if (!res.ok) {
         throw new Error(`API Error: ${res.status} ${res.statusText}`);
       }
 
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
-      setSources(data.results?.map(result => result.url) || []);
-
+      setSources(data.results?.map(result => results.url) || []);
+      console.log(sources);
       const newChatHistory = [...chatHistory, { user: message, bot: '' }];
       setChatHistory(newChatHistory);
 
