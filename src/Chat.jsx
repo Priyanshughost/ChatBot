@@ -119,10 +119,7 @@ function Chat() {
               </div>
             </div>
             <div className="list">
-              <Sub />
-              <Sub />
-              <Sub />
-              <Sub />
+              Maths
             </div>
           </div>
           <div className="mid">
