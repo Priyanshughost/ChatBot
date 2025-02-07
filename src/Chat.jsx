@@ -4,11 +4,20 @@ import Response from "/src/Response";
 import User from "/src/User";
 
 function Chat() {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(false);
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [sources, setSources] = useState([]);
-  const chatContainerRef = useRef(null);
+  const [chatHistory, setChatHistory] = useState([]); // Store chat messages
+  const [loading, setLoading] = useState(false); // Loading state
+  const chatContainerRef = useRef(null); // Ref for scrolling
+  const [sources, setSources] = useState([]); // Store sources for Recommended Resources
+
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Function to send message to Tavily API
   const sendMessage = async () => {
@@ -24,7 +33,7 @@ function Chat() {
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "basic",
+          include_answer: "basic", // Basic LLM answer
           search_depth: "basic",
           max_results: 5
         }),
@@ -35,21 +44,45 @@ function Chat() {
       }
 
       const data = await res.json();
-      console.log("Tavily API Response:", data); // Logs full API response
+      const botReply = data.answer || "I couldn't find an answer. Try a different question.";
 
-      const extractedSources = data.results?.map(result => result.url) || [];
-      console.log("Extracted Sources:", extractedSources); // Logs extracted URLs
+      // Extract and store sources (if available)
+      const extractedSources = data.results?.map((source) => {
+        try {
+          return new URL(source.url).hostname.replace('www.', ''); // Extract domain name
+        } catch {
+          return null;
+        }
+      }).filter(Boolean); // Remove null values
 
       setSources(extractedSources);
-      setChatHistory(prev => [...prev, { user: message, bot: data.answer || "No answer found." }]);
-      setMessage(""); 
+
+      // Gradual typing effect for bot response
+      const newChatHistory = [...chatHistory, { user: message, bot: '' }];
+      setChatHistory(newChatHistory);
+
+      let i = 0;
+      const typingInterval = setInterval(() => {
+        setChatHistory(prevHistory => {
+          const updatedHistory = [...prevHistory];
+          updatedHistory[updatedHistory.length - 1].bot = botReply.slice(0, i + 1);
+          return updatedHistory;
+        });
+        i++;
+        if (i === botReply.length) {
+          clearInterval(typingInterval);
+          setLoading(false);
+        }
+      }, 30);
+
+      setMessage(""); // Clear input field
     } catch (error) {
       console.error("API Error:", error);
-    } finally {
       setLoading(false);
     }
   };
 
+  // Effect to automatically scroll to the bottom when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -58,31 +91,82 @@ function Chat() {
 
   return (
     <div className="interface">
+      <div className="top">
+        <img
+          src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/logo2.png"
+          alt="Chatbot Logo"
+        />
+      </div>
       <div className="bot">
-        <div className="mid">
-          <div className="chat" ref={chatContainerRef}>
-            {chatHistory.map((chat, index) => (
-              <div key={index}>
-                <User message={chat.user} />
-                <Response message={chat.bot} />
+        <div className="nav-btns">
+          <img
+            src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/f-arrow.svg"
+            alt="Show Left"
+            onClick={() => setShowLeft(!showLeft)}
+          />
+          <img
+            src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/b-arrow.svg"
+            alt="Show Right"
+            onClick={() => setShowRight(!showRight)}
+          />
+        </div>
+        <div className="main">
+          <div className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}>
+            <div className="title">
+              <div className="t-left">
+                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="Subjects" />
+                <h3>Subjects</h3>
               </div>
-            ))}
+            </div>
+            <div className="list">
+              <Sub />
+              <Sub />
+              <Sub />
+              <Sub />
+            </div>
           </div>
-          <div className="mssg">
-            <input
-              type="text"
-              placeholder="Ask Something"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <img
-              src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/send.svg"
-              alt="Send"
-              onClick={sendMessage}
-              style={{ cursor: "pointer", opacity: loading ? 0.5 : 1 }}
-            />
+          <div className="mid">
+            <div className="chat" ref={chatContainerRef}>
+              {chatHistory.map((chat, index) => (
+                <div key={index}>
+                  <User message={chat.user} />
+                  <Response message={chat.bot} />
+                </div>
+              ))}
+            </div>
+            <div className="mssg">
+              <input
+                type="text"
+                placeholder="Ask Something"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+              />
+              <img
+                src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/send.svg"
+                alt="Send"
+                onClick={sendMessage}
+                style={{ cursor: "pointer", opacity: loading ? 0.5 : 1 }}
+              />
+            </div>
           </div>
+
+          {/* Recommended Resources Section */}
+          {sources.length > 0 && (
+            <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
+              <div className="title">
+                <div className="t-left">
+                  <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg" alt="Recommended" />
+                  <h3>Recommended Resources</h3>
+                </div>
+              </div>
+              <div className="list">
+                {sources.map((site, index) => (
+                  <Sub key={index} siteName={site} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
