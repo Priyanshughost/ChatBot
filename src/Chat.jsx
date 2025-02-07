@@ -37,7 +37,7 @@ function Chat() {
           max_results: 5
         }),
       });
-
+      console.log(res);
       if (!res.ok) {
         throw new Error(`API Error: ${res.status} ${res.statusText}`);
       }
@@ -61,7 +61,7 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 30);
+      }, 10);
 
       setMessage("");
     } catch {
