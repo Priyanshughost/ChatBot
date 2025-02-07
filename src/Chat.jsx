@@ -168,12 +168,12 @@ function Chat() {
             <div className="list">
               {sources.length > 0 ? (
                 sources.map((source, idx) => (
-                  <Sub key={idx} title={source.title} url={source.url} />
+                  <Sub key={idx} url={source.url} />
                 ))
               ) : (
                 <p>No recommended resources yet.</p>
               )}
-            </div>
+          </div>
           </div>
         </div>
       </div>
