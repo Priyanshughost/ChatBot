@@ -27,7 +27,7 @@ function Chat() {
       const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer tvly-YOUR_API_KEY', // Replace with your Tavily API key
+          'Authorization': 'Bearer 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', // Replace with your Tavily API key
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
