@@ -5,7 +5,7 @@ function Sub({ title, url }) {
     <div className='sub'>
       <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="Resource" />
       {url ? (
-        <a href={url} target="_blank" rel="noopener noreferrer">
+        <a href={url}>
           <h4>{url.split("//")[1].split("/")[0].split(".")[1].toUpperCase()}</h4>
         </a>
       ) : (
