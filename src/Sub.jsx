@@ -1,9 +1,19 @@
-import React from 'react';
+import React from "react";
 
-function Sub({ url }) {
-  console.log("Received URL:", url); // Logs each URL received
-
-  return null; // Prevents rendering anything on UI
+function Sub({ title, url }) {
+  return (
+    <div className="sub">
+      <img
+        src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg"
+        alt="Website Icon"
+      />
+      <h4>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          {title}
+        </a>
+      </h4>
+    </div>
+  );
 }
 
 export default Sub;
