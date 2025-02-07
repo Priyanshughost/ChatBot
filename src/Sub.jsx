@@ -6,7 +6,7 @@ function Sub({ title, url }) {
       <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="Resource" />
       {url ? (
         <a href={url} target="_blank" rel="noopener noreferrer">
-          <h4>{toUpperCase(${url.split("//")[1].split("/")[0].split('.')[1]})}</h4>
+          <h4>{url.split("//")[1].split("/")[0].split(".")[1].toUpperCase()}</h4>
         </a>
       ) : (
         <h4>{title}</h4>
