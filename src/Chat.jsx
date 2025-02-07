@@ -32,8 +32,8 @@ function Chat() {
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "advanced", // Get a detailed LLM-generated answer
-          search_depth: "advanced",
+          include_answer: true, // Get a quick AI-generated answer
+          search_depth: "basic", // Perform a basic search
           max_results: 5
         }),
       });
