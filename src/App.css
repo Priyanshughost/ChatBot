@@ -222,7 +222,8 @@
   font-size: 1rem;
   color: #5ce1e6;
 }
-
+.sub a{
+  text-decoration: none;
 .mssg {
   width: 100%;
   position: fixed;
