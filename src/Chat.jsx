@@ -118,12 +118,13 @@ function Chat() {
                 <h3>Subjects</h3>
               </div>
             </div>
-            <div className="list">
+            subjects will be displayed soon
+{/*             <div className="list">
               <Sub />
               <Sub />
               <Sub />
               <Sub />
-            </div>
+            </div> */}
           </div>
           <div className="mid">
             <div className="chat" ref={chatContainerRef}>
@@ -160,13 +161,14 @@ function Chat() {
                 <h3>Recommended Resources</h3>
               </div>
             </div>
-            <div className="list">
+            resources will be displayed soon
+{/*             <div className="list">
               {sources.length > 0 ? (
                 sources.map((source, idx) => source && <Sub key={idx} url={source} />)
               ) : (
                 <p>Documentation links will be given here</p>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
