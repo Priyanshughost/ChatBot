@@ -161,10 +161,16 @@ function Chat() {
               </div>
             </div>
             <div className="list">
-              {sources.length > 0 ? (
-                sources.map((source, idx) => <Sub key={idx} url={source} />)
-              ):<p>Documentation links will be given here</p>}
-            </div>
+            {sources.length > 0 ? (
+              sources.map((source, idx) => {
+                const websiteName = source.url.split("//")[1]?.split("/")[0] || "Unknown";
+                console.log("Website Name:", websiteName); // Debugging
+                return <Sub key={idx} siteName={websiteName} />;
+              })
+            ) : (
+              <p>Documentation links will be given here</p>
+            )}
+          </div>
           </div>
         </div>
       </div>
