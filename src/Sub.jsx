@@ -9,7 +9,7 @@ function Sub({ title, url }) {
       />
       <h4>
         <a href={url} target="_blank" rel="noopener noreferrer">
-          {title}
+          {url.split("//")[1].split("/")[0]}
         </a>
       </h4>
     </div>
