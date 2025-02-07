@@ -10,8 +10,8 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]); // Store chat messages
   const [loading, setLoading] = useState(false); // Loading state
+  const [sources, setSources] = useState([]); // Store recommended sources
   const chatContainerRef = useRef(null); // Ref for scrolling
-  const [sources, setSources] = useState([]); // Store sources for Recommended Resources
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -28,12 +28,12 @@ function Chat() {
       const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer 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',
+          'Authorization': 'Bearer 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', // Tavily API key
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "basic", // Basic LLM answer
+          include_answer: "basic", // Get a short LLM-generated answer
           search_depth: "basic",
           max_results: 5
         }),
@@ -46,15 +46,8 @@ function Chat() {
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
 
-      // Extract and store sources (if available)
-      const extractedSources = data.results?.map((source) => {
-        try {
-          return new URL(source.url).hostname.replace('www.', ''); // Extract domain name
-        } catch {
-          return null;
-        }
-      }).filter(Boolean); // Remove null values
-
+      // Extract only the URLs from the response and update sources
+      const extractedSources = data.results?.map(result => result.url) || [];
       setSources(extractedSources);
 
       // Gradual typing effect for bot response
@@ -73,7 +66,7 @@ function Chat() {
           clearInterval(typingInterval);
           setLoading(false);
         }
-      }, 30);
+      }, 100); // Adjust typing speed here
 
       setMessage(""); // Clear input field
     } catch (error) {
@@ -111,15 +104,25 @@ function Chat() {
           />
         </div>
         <div className="main">
-          <div className={`left ${showLeft ? "f-tX" : "f-t-X"} ${screenWidth > 670 ? "show" : "hide"}`}>
+          <div
+            className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
+              screenWidth > 670 ? "show" : "hide"
+            }`}
+          >
             <div className="title">
               <div className="t-left">
-                <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="Subjects" />
+                <img
+                  src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg"
+                  alt="Subjects"
+                />
                 <h3>Subjects</h3>
               </div>
             </div>
             <div className="list">
-              Maths
+              <Sub />
+              <Sub />
+              <Sub />
+              <Sub />
             </div>
           </div>
           <div className="mid">
@@ -147,23 +150,24 @@ function Chat() {
               />
             </div>
           </div>
-
-          {/* Recommended Resources Section */}
-          {sources.length > 0 && (
-            <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
-              <div className="title">
-                <div className="t-left">
-                  <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg" alt="Recommended" />
-                  <h3>Recommended Resources</h3>
-                </div>
-              </div>
-              <div className="list">
-                {sources.map((site, index) => (
-                  <Sub key={index} siteName={site} />
-                ))}
+          <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
+            <div className="title">
+              <div className="t-left">
+                <img
+                  src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/rec.svg"
+                  alt="Recommended"
+                />
+                <h3>Recommended Resources</h3>
               </div>
             </div>
-          )}
+            <div className="list">
+              {sources.length > 0 ? (
+                sources.map((source, idx) => source && <Sub key={idx} url={source} />)
+              ) : (
+                <p>Documentation links will be given here</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
