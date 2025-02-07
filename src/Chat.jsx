@@ -44,7 +44,7 @@ function Chat() {
 
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
-      setSources(data.results?.map(result => results.url) || []);
+      setSources(data.results?.map(result => result.url) || []);
       console.log(sources);
       const newChatHistory = [...chatHistory, { user: message, bot: '' }];
       setChatHistory(newChatHistory);
