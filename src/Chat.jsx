@@ -10,7 +10,7 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]); // Store chat messages
   const [loading, setLoading] = useState(false); // Loading state
-  const [sources, setSources] = useState([]); // Store recommended resources
+  const [sources, setSources] = useState([]); // Store recommended sources
   const chatContainerRef = useRef(null); // Ref for scrolling
 
   useEffect(() => {
@@ -28,13 +28,13 @@ function Chat() {
       const res = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: {
-          'Authorization': 'Bearer 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', // Replace with your Tavily API key
+          'Authorization': 'Bearer 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', // Tavily API key
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           query: message,
-          include_answer: "basic", // Only get a quick LLM-generated answer
-          search_depth: "basic",  // Do a basic search to save API credits
+          include_answer: "basic", // Get a short LLM-generated answer
+          search_depth: "basic",
           max_results: 5
         }),
       });
@@ -46,14 +46,14 @@ function Chat() {
       const data = await res.json();
       const botReply = data.answer || "I couldn't find an answer. Try a different question.";
 
-      // Update chat history without sources in mid section
-      const newChatHistory = [...chatHistory, { user: message, bot: '' }];
-      setChatHistory(newChatHistory);
-      
-      // Store sources in "Recommended Resources" section
-      setSources(data.results || []);
+      // Extract only the URLs from the response and update sources
+      const extractedSources = data.results?.map(result => result.url) || [];
+      setSources(extractedSources);
 
       // Gradual typing effect for bot response
+      const newChatHistory = [...chatHistory, { user: message, bot: '' }];
+      setChatHistory(newChatHistory);
+
       let i = 0;
       const typingInterval = setInterval(() => {
         setChatHistory(prevHistory => {
@@ -104,7 +104,6 @@ function Chat() {
           />
         </div>
         <div className="main">
-          {/* Left Section (Subjects) */}
           <div
             className={`left ${showLeft ? "f-tX" : "f-t-X"} ${
               screenWidth > 670 ? "show" : "hide"
@@ -120,14 +119,12 @@ function Chat() {
               </div>
             </div>
             <div className="list">
-              <Sub title="Maths" />
-              <Sub title="Science" />
-              <Sub title="History" />
-              <Sub title="Computer Science" />
+              <Sub />
+              <Sub />
+              <Sub />
+              <Sub />
             </div>
           </div>
-
-          {/* Middle Section (Chat) */}
           <div className="mid">
             <div className="chat" ref={chatContainerRef}>
               {chatHistory.map((chat, index) => (
@@ -153,8 +150,6 @@ function Chat() {
               />
             </div>
           </div>
-
-          {/* Right Section (Recommended Resources) */}
           <div className={`right ${showRight ? "b-tX show" : "b-t-X hide"}`}>
             <div className="title">
               <div className="t-left">
@@ -167,13 +162,11 @@ function Chat() {
             </div>
             <div className="list">
               {sources.length > 0 ? (
-                sources.map((source, idx) => (
-                  <Sub key={idx} url={source.url} />
-                ))
+                sources.map((source, idx) => <Sub key={idx} url={source} />)
               ) : (
                 <p>No recommended resources yet.</p>
               )}
-          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -182,4 +175,3 @@ function Chat() {
 }
 
 export default Chat;
-
