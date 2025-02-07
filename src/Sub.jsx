@@ -1,10 +1,22 @@
-import React from "react";
+import React from 'react';
 
-function Sub({ siteName }) {
+function Sub({ url }) {
+  // Extract website name safely
+  const getWebsiteName = (url) => {
+    if (!url) return "Unknown";
+    try {
+      return url.split("//")[1]?.split("/")[0] || "Unknown";
+    } catch (error) {
+      console.error("Error processing URL:", url, error);
+      return "Unknown";
+    }
+  };
+
+  const websiteName = getWebsiteName(url);
+
   return (
     <div className="sub">
-      <img src="https://raw.githubusercontent.com/Priyanshughost/ChatBot/main/src/book.svg" alt="" />
-      <h4>{siteName}</h4>
+      <h4>{websiteName}</h4>
     </div>
   );
 }
